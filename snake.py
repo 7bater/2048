@@ -1,15 +1,13 @@
 import pygame
-# Fenstergröße kleiner machen
+
 WIDTH, HEIGHT = 300, 200
 CELL_SIZE = 20
 import random
 import sys
 
-# Fenstergröße
 WIDTH, HEIGHT = 600, 400
 CELL_SIZE = 20
 
-# Farben
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -36,7 +34,6 @@ def wait_for_key():
                 return
 
 def main():
-    # Fenstergröße 1.5 mal größer machen
     global WIDTH, HEIGHT
     WIDTH = 600
     HEIGHT = 400
@@ -46,7 +43,7 @@ def main():
     pygame.display.set_caption('Snake')
     clock = pygame.time.Clock()
 
-    # Startbildschirm
+
     screen.fill(BLACK)
     draw_text(screen, "Snake", 80, GREEN, (WIDTH//2, HEIGHT//2 - 60))
     draw_text(screen, "Zum Starten eine Taste drücken", 48, WHITE, (WIDTH//2, HEIGHT//2 + 40))
@@ -74,11 +71,9 @@ def main():
                         direction = (-CELL_SIZE, 0)
                     elif event.key == pygame.K_RIGHT and direction != (-CELL_SIZE, 0):
                         direction = (CELL_SIZE, 0)
-
-            # Kopf bewegen
+                        
             new_head = (snake[0][0] + direction[0], snake[0][1] + direction[1])
 
-            # Kollision prüfen
             if (new_head[0] < 0 or new_head[0] >= WIDTH or
                 new_head[1] < 0 or new_head[1] >= HEIGHT or
                 new_head in snake):
@@ -87,7 +82,6 @@ def main():
 
             snake.insert(0, new_head)
 
-            # Apfel essen
             if new_head == apple:
                 score += 1
                 apple = random_position()
@@ -96,7 +90,6 @@ def main():
             else:
                 snake.pop()
 
-            # Zeichnen
             screen.fill(BLACK)
             for segment in snake:
                 pygame.draw.rect(screen, GREEN, (*segment, CELL_SIZE, CELL_SIZE))
@@ -105,7 +98,7 @@ def main():
             pygame.display.flip()
             clock.tick(10)
 
-        # Game Over Bildschirm
+
         screen.fill(BLACK)
         draw_text(screen, "Game Over!", 80, RED, (WIDTH//2, HEIGHT//2 - 60))
         draw_text(screen, f"Score: {score}", 48, WHITE, (WIDTH//2, HEIGHT//2 + 10))
