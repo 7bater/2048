@@ -1,104 +1,83 @@
 import pygame
-WIDTH, HEIGHT = 300, 200
-CELL_SIZE = 20
 import random
 import sys
 
+pygame.init()
 WIDTH, HEIGHT = 600, 400
 CELL_SIZE = 20
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+font = pygame.font.SysFont(None, 36)
 
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+GREEN = (0, 200, 0)
+RED = (200, 0, 0)
 BLACK = (0, 0, 0)
 
-def random_position():
+def draw_snake(snake):
+    for pos in snake:
+        pygame.draw.rect(screen, GREEN, (*pos, CELL_SIZE, CELL_SIZE))
+
+def draw_food(food):
+    pygame.draw.rect(screen, RED, (*food, CELL_SIZE, CELL_SIZE))
+
+def random_food():
     x = random.randrange(0, WIDTH, CELL_SIZE)
     y = random.randrange(0, HEIGHT, CELL_SIZE)
     return (x, y)
 
-def draw_text(screen, text, size, color, pos):
-    font = pygame.font.SysFont(None, size)
-    surface = font.render(text, True, color)
-    rect = surface.get_rect(center=pos)
-    screen.blit(surface, rect)
+def main():
+    snake = [(100, 100), (80, 100), (60, 100)]
+    direction = (CELL_SIZE, 0)
+    food = random_food()
+    score = 0
 
-def wait_for_key():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                return
+                if event.key == pygame.K_UP and direction != (0, CELL_SIZE):
+                    direction = (0, -CELL_SIZE)
+                elif event.key == pygame.K_DOWN and direction != (0, -CELL_SIZE):
+                    direction = (0, CELL_SIZE)
+                elif event.key == pygame.K_LEFT and direction != (CELL_SIZE, 0):
+                    direction = (-CELL_SIZE, 0)
+                elif event.key == pygame.K_RIGHT and direction != (-CELL_SIZE, 0):
+                    direction = (CELL_SIZE, 0)
 
-def main():
-    global WIDTH, HEIGHT
-    WIDTH = 600
-    HEIGHT = 400
+        new_head = (snake[0][0] + direction[0], snake[0][1] + direction[1])
 
-    pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption('Snake')
-    clock = pygame.time.Clock()
+        if (
+            new_head[0] < 0 or new_head[0] >= WIDTH or
+            new_head[1] < 0 or new_head[1] >= HEIGHT or
+            new_head in snake
+        ):
+            break  
 
-    screen.fill(BLACK)
-    draw_text(screen, "Snake", 80, GREEN, (WIDTH//2, HEIGHT//2 - 60))
-    draw_text(screen, "Zum Starten eine Taste drücken", 48, WHITE, (WIDTH//2, HEIGHT//2 + 40))
-    pygame.display.flip()
-    wait_for_key()
-
-    while True:
-        snake = [(WIDTH // 2, HEIGHT // 2)]
-        direction = (0, -CELL_SIZE)
-        apple = random_position()
-        score = 0
-        game_over = False
-
-        while not game_over:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP and direction != (0, CELL_SIZE):
-                        direction = (0, -CELL_SIZE)
-                    elif event.key == pygame.K_DOWN and direction != (0, -CELL_SIZE):
-                        direction = (0, CELL_SIZE)
-                    elif event.key == pygame.K_LEFT and direction != (CELL_SIZE, 0):
-                        direction = (-CELL_SIZE, 0)
-                    elif event.key == pygame.K_RIGHT and direction != (-CELL_SIZE, 0):
-                        direction = (CELL_SIZE, 0)
-
-            new_head = (snake[0][0] + direction[0], snake[0][1] + direction[1])
-
-            if (new_head[0] < 0 or new_head[0] >= WIDTH or
-                new_head[1] < 0 or new_head[1] >= HEIGHT or
-                new_head in snake):
-                game_over = True
-                break
-
-            snake.insert(0, new_head)
-
-            if new_head == apple:
-                score += 1
-                apple = random_position()
-                while apple in snake:
-                    apple = random_position()
-            else:
-                snake.pop()
-
-            screen.fill(BLACK)
-            for segment in snake:
-                pygame.draw.rect(screen, GREEN, (*segment, CELL_SIZE, CELL_SIZE))
-            pygame.draw.rect(screen, RED, (*apple, CELL_SIZE, CELL_SIZE))
-            draw_text(screen, f"Score: {score}", 40, WHITE, (80, 30))
-            pygame.display.flip()
-            clock.tick(10)
+        snake.insert(0, new_head)
+        if new_head == food:
+            score += 1
+            food = random_food()
+            while food in snake:
+                food = random_food()
+        else:
+            snake.pop()
 
         screen.fill(BLACK)
-        draw_text(screen, "Game Over!", 80, RED, (WIDTH//2, HEIGHT//2 - 60))
-        draw_text(screen, f"Score: {score}", 48, WHITE, (WIDTH//2, HEIGHT//2 + 10))
-        draw_text(screen, "Zum Neustarten eine Taste drücken", 40, WHITE, (WIDTH//2, HEIGHT//2 + 80))
+        draw_snake(snake)
+        draw_food(food)
+        score_text = font.render(f"Punkte: {score}", True, WHITE)
+        screen.blit(score_text, (10, 10))
         pygame.display.flip()
-        wait_for_key()
+        clock.tick(10)
+
+    screen.fill(BLACK)
+    msg = font.render("Game Over!", True, RED)
+    screen.blit(msg, (WIDTH // 2 - msg.get_width() // 2, HEIGHT // 2 - msg.get_height() // 2))
+    pygame.display.flip()
+    pygame.time.wait(2000)
+
+if __name__ == "__main__":
+    main()
