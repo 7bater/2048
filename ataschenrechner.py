@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 import math
-
 class Calculator(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.tk.call('tk', 'scaling', 2.0)  
         self.title("Taschenrechner")
-        self.geometry("400x650")  # Fenster größer gemacht
+        self.geometry("600x900")  
         self.resizable(False, False)
         self.configure(bg="#222")
 
@@ -20,10 +20,10 @@ class Calculator(tk.Tk):
         input_frame.pack(expand=True, fill="both")
 
         input_field = tk.Entry(
-            input_frame, font=('Arial', 32), textvariable=self.input_text,  # Schriftgröße größer
-            bg="#333", fg="#b20000", bd=0, justify=tk.RIGHT  # Dunkelrote Schriftfarbe
+            input_frame, font=('Arial', 32), textvariable=self.input_text,  
+            bg="#333", fg="#b20000", bd=0, justify=tk.RIGHT  
         )
-        input_field.pack(expand=True, fill="both", ipady=30)  # Eingabefeld höher
+        input_field.pack(expand=True, fill="both", ipady=30)  
 
         btns_frame = tk.Frame(self, bg="#222")
         btns_frame.pack(expand=True, fill="both")
@@ -45,7 +45,7 @@ class Calculator(tk.Tk):
                     tk.Label(row_frame, bg="#222").pack(side=tk.LEFT, expand=True, fill="both", padx=2, pady=2)
                     continue
                 b = tk.Button(
-                    row_frame, text=btn, font=('Arial', 24), fg="#fff", bg="#660000",  # Dunkelrote Buttons
+                    row_frame, text=btn, font=('Arial', 24), fg="#fff", bg="#660000", 
                     bd=0, relief=tk.FLAT, activebackground="#990000", activeforeground="#fff",
                     command=lambda x=btn: self.on_button_click(x)
                 )
